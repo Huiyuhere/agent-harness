@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { discoverFileRoutes, extractLinkEdges } from "../lib/route-discovery";
+import { discoverFileRoutes, discoverSourceRoutes, extractLinkEdges } from "../lib/route-discovery";
 
 test("discovers Next app and pages routes", () => {
   const routes = discoverFileRoutes(["app/page.tsx", "app/pricing/page.tsx", "app/blog/[slug]/page.tsx", "pages/settings.tsx", "pages/_app.tsx"]);
@@ -11,4 +11,10 @@ test("discovers Next app and pages routes", () => {
 test("extracts declared click edges from href and to", () => {
   const edges = extractLinkEdges(`<Link href="/pricing"/><NavLink to='/settings'/>`, "/");
   assert.deepEqual(edges.map((edge) => edge.toRoute), ["/pricing", "/settings"]);
+});
+
+test("discovers React Router and Wouter routes from source", () => {
+  const routes = discoverSourceRoutes([{ path: "src/App.tsx", content: `<Route path={"/"} /><Route path="/pricing" /><Route path='/users/:id' />` }]);
+  assert.deepEqual(routes.map((item) => item.route), ["/", "/pricing", "/users/:id"]);
+  assert.equal(routes[2].dynamic, true);
 });

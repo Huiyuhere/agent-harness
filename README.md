@@ -10,9 +10,17 @@ transactions. The source tree—not a canvas override—is the design truth.
 The first working slice includes:
 
 - a resizable, collapsible project and route sidebar;
+- isolated workspaces whose route frames, edits, brand tokens, and update times
+  never leak into another workspace;
 - an infinite pan/zoom canvas with route and saved-state frames;
-- Edit, Prototype, and Graph interaction modes;
+- visibly distinct Edit, Preview Flow, and Graph modes: Edit selects and changes
+  DOM content, Preview Flow exposes destination hotspots and pans to the linked
+  frame, and Graph shows those route relationships;
 - Design, Layers, Code, and Changes inspector views;
+- working inline and inspector text editing with preserved spaces and line
+  breaks, typography/layout controls, brand swatches, and a color-wheel picker;
+- direct public GitHub repository inspection with Next.js and React
+  Router/Wouter route discovery plus brand token extraction;
 - semantic source-change records with timestamps and inverse values;
 - a persistent-style agent surface with frame context, progress, stop, copy,
   timestamps, and duration;
@@ -27,11 +35,12 @@ The first working slice includes:
 - a bounded OpenAI Responses API proxy that streams responses and only permits
   inspect/propose tools. The agent cannot apply or publish a patch.
 
-GitHub App installation, repository archive import, full DOM instrumentation,
-real HMR validation against imported apps, encrypted R2 bundle persistence, and
-explicit push/PR are the next integration milestones. Their UI and security
-boundaries are represented, but they remain disabled until hosted credentials
-and the production WebContainer feasibility gate are configured.
+Private GitHub App installation, full repository archive execution, full DOM
+instrumentation, real HMR validation against imported apps, encrypted R2 bundle
+persistence, and explicit push/PR are the next integration milestones. Public
+repository metadata, routes, and brand tokens can already be imported without
+running dependency scripts. Private source remains disabled until hosted GitHub
+App credentials and the production WebContainer feasibility gate are configured.
 
 ## Safety model
 

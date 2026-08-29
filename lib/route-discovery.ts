@@ -19,6 +19,24 @@ export function discoverFileRoutes(files: string[]): DiscoveredRoute[] {
   return routes.sort((a, b) => a.route.localeCompare(b.route));
 }
 
+export function discoverSourceRoutes(files: Array<{ path: string; content: string }>): DiscoveredRoute[] {
+  const routes = new Map<string, DiscoveredRoute>();
+  for (const file of files) {
+    const patterns = [
+      /<Route\b[^>]*\bpath\s*=\s*(?:\{\s*)?["'`]([^"'`]+)["'`](?:\s*\})?/g,
+      /\b(?:path|route)\s*:\s*["'`]([^"'`]+)["'`]/g,
+    ];
+    for (const pattern of patterns) {
+      for (const match of file.content.matchAll(pattern)) {
+        const route = match[1].trim();
+        if (!route.startsWith("/") || route === "*") continue;
+        routes.set(route, { route, file: file.path, dynamic: /[:*\[]/.test(route), framework: "react-router" });
+      }
+    }
+  }
+  return [...routes.values()].sort((a, b) => a.route.localeCompare(b.route));
+}
+
 export function extractLinkEdges(source: string, fromRoute: string) {
   const edges = new Set<string>();
   for (const match of source.matchAll(/(?:href|to)\s*=\s*["'](\/[A-Za-z0-9_\-\/[\]]*)["']/g)) edges.add(match[1]);
