@@ -19,6 +19,12 @@ The first working slice includes:
 - Design, Layers, Code, and Changes inspector views;
 - working inline and inspector text editing with preserved spaces and line
   breaks, typography/layout controls, brand swatches, and a color-wheel picker;
+- a shared Page → Navigation / Route content → editable-node hierarchy used by
+  the canvas, Layers, Design, Code, and Changes views, including explicit CSS
+  units (`px`, `rem`, `em`, and `%`);
+- hierarchy-preserving page duplication and blank-page creation;
+- prototype flow-gap detection: unresolved controls are logged with click
+  counts and timestamps, then can generate and link a suggested next state;
 - direct public GitHub repository inspection with Next.js and React
   Router/Wouter route discovery plus brand token extraction;
 - semantic source-change records with timestamps and inverse values;
