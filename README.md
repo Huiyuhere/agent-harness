@@ -24,12 +24,17 @@ The first working slice includes:
   units (`px`, `rem`, `em`, and `%`);
 - hierarchy-preserving page duplication and blank-page creation;
 - prototype flow-gap detection: unresolved controls are logged with click
-  counts and timestamps, then can generate and link a suggested next state;
+  counts and timestamps, open as editable context-rich agent drafts, then can
+  generate and link a suggested next state;
 - direct public GitHub repository inspection with Next.js and React
   Router/Wouter route discovery plus brand token extraction;
 - semantic source-change records with timestamps and inverse values;
-- a persistent-style agent surface with frame context, progress, stop, copy,
-  timestamps, and duration;
+- a persistent agent surface with frame context, project-scoped D1 history,
+  context receipts, progress, stop, copy, timestamps, and duration;
+- first-launch personal OpenAI key onboarding with model-access validation and
+  a user-bound encrypted HttpOnly cookie; keys never enter project storage;
+- brand/design extraction plus reviewable `brand.md` and `design.md`
+  improvement proposals;
 - typed JSX, CSS, and Tailwind source patch adapters with stale-hash checks;
 - route discovery and inferred link edges;
 - a scheduler that permits three read/analysis jobs while serializing source
@@ -51,7 +56,9 @@ App credentials and the production WebContainer feasibility gate are configured.
 ## Safety model
 
 - Imported dependencies never run before explicit project trust.
-- GitHub credentials and OpenAI keys remain server-side.
+- GitHub credentials remain server-side. Personal OpenAI keys are accepted once,
+  encrypted into a signed-in-user-bound HttpOnly cookie, and never stored in
+  D1, R2, localStorage, logs, or source control.
 - A GitHub App must be limited to selected repositories with Metadata read,
   Contents read/write, Pull Requests read/write, and no Workflows permission.
 - Agent changes are proposals until the user approves a diff.
@@ -85,7 +92,8 @@ node --test tests/rendered-html.test.mjs
 Copy `.env.example` to `.env` for local secret names. Configure production
 values through Sites; never commit `.env`.
 
-- `OPENAI_API_KEY`
+- `API_KEY_ENCRYPTION_KEY` (a high-entropy hosted secret used only to seal
+  personal key sessions)
 - `GITHUB_APP_ID`
 - `GITHUB_APP_CLIENT_ID`
 - `GITHUB_APP_CLIENT_SECRET`

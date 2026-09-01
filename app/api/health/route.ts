@@ -14,7 +14,8 @@ export async function GET() {
       readerConcurrency: 3,
       serializedWriters: true,
       githubConfigured: Boolean(process.env.GITHUB_APP_ID),
-      openaiConfigured: Boolean(process.env.OPENAI_API_KEY),
+      personalOpenAIKeys: true,
+      apiKeyEncryptionConfigured: Boolean(process.env.API_KEY_ENCRYPTION_KEY),
     },
   });
 }

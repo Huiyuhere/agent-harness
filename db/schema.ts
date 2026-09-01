@@ -62,9 +62,29 @@ export const agentJobs = sqliteTable("agent_jobs", {
   id: text("id").primaryKey(), threadId: text("thread_id").notNull().references(() => agentThreads.id), repositoryId: text("repository_id").notNull(), kind: text("kind").notNull(), status: text("status").notNull(), progressJson: text("progress_json").notNull(), startedAt: text("started_at"), finishedAt: text("finished_at"), ...timestamps,
 }, (table) => [index("idx_agent_jobs_repository_status").on(table.repositoryId, table.status), index("idx_agent_jobs_thread_id").on(table.threadId)]);
 
+export const agentMessages = sqliteTable("agent_messages", {
+  id: text("id").primaryKey(), threadId: text("thread_id").notNull().references(() => agentThreads.id), projectId: text("project_id").notNull().references(() => projects.id), ownerId: text("owner_id").notNull().references(() => owners.id),
+  role: text("role").notNull(), content: text("content").notNull(), contextReceiptJson: text("context_receipt_json").notNull(), status: text("status").notNull(), durationMs: integer("duration_ms"), ...timestamps,
+}, (table) => [index("idx_agent_messages_thread_created").on(table.threadId, table.createdAt), index("idx_agent_messages_project_owner").on(table.projectId, table.ownerId)]);
+
 export const projectMemories = sqliteTable("project_memories", {
   id: text("id").primaryKey(), projectId: text("project_id").notNull().references(() => projects.id), category: text("category").notNull(), content: text("content").notNull(), provenanceType: text("provenance_type").notNull(), provenanceId: text("provenance_id").notNull(), approvedBy: text("approved_by").notNull(), ...timestamps,
 }, (table) => [index("idx_project_memories_project_category").on(table.projectId, table.category)]);
+
+export const projectContextSnapshots = sqliteTable("project_context_snapshots", {
+  id: text("id").primaryKey(), projectId: text("project_id").notNull().references(() => projects.id), ownerId: text("owner_id").notNull().references(() => owners.id),
+  kind: text("kind").notNull(), path: text("path").notNull(), sourceHash: text("source_hash").notNull(), content: text("content").notNull(), parsedJson: text("parsed_json").notNull(), status: text("status").notNull(), ...timestamps,
+}, (table) => [uniqueIndex("idx_context_project_path_hash").on(table.projectId, table.path, table.sourceHash), index("idx_context_project_owner").on(table.projectId, table.ownerId)]);
+
+export const designDocumentProposals = sqliteTable("design_document_proposals", {
+  id: text("id").primaryKey(), projectId: text("project_id").notNull().references(() => projects.id), ownerId: text("owner_id").notNull().references(() => owners.id),
+  kind: text("kind").notNull(), path: text("path").notNull(), baseHash: text("base_hash").notNull(), originalContent: text("original_content").notNull(), proposedContent: text("proposed_content").notNull(), diff: text("diff").notNull(), rationale: text("rationale").notNull(), status: text("status").notNull(), ...timestamps,
+}, (table) => [index("idx_document_proposals_project_status").on(table.projectId, table.status), index("idx_document_proposals_owner").on(table.ownerId)]);
+
+export const flowGaps = sqliteTable("flow_gaps", {
+  id: text("id").primaryKey(), projectId: text("project_id").notNull().references(() => projects.id), ownerId: text("owner_id").notNull().references(() => owners.id),
+  frameId: text("frame_id").notNull(), node: text("node").notNull(), label: text("label").notNull(), role: text("role").notNull(), sourceAnchorJson: text("source_anchor_json").notNull(), computedStyleJson: text("computed_style_json").notNull(), clickCount: integer("click_count").notNull(), suggestedRoute: text("suggested_route").notNull(), screenshotKey: text("screenshot_key"), status: text("status").notNull(), transactionId: text("transaction_id"), firstSeenAt: text("first_seen_at").notNull(), lastClickedAt: text("last_clicked_at").notNull(), ...timestamps,
+}, (table) => [uniqueIndex("idx_flow_gaps_project_frame_node").on(table.projectId, table.frameId, table.node), index("idx_flow_gaps_project_status").on(table.projectId, table.status)]);
 
 export const artifacts = sqliteTable("artifacts", {
   id: text("id").primaryKey(), projectId: text("project_id").notNull().references(() => projects.id), kind: text("kind").notNull(), objectKey: text("object_key").notNull(), contentType: text("content_type").notNull(), encrypted: integer("encrypted", { mode: "boolean" }).notNull(), sizeBytes: integer("size_bytes").notNull(), ...timestamps,

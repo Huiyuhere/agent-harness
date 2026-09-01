@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { extractBrandTokens, isBrandSource, parseGitHubRepositoryUrl } from "../../../../lib/brand-extractor";
 import { discoverFileRoutes, discoverSourceRoutes } from "../../../../lib/route-discovery";
+import { brandDocuments } from "../../../../lib/brand-documents";
 
 export const dynamic = "force-dynamic";
 
@@ -50,10 +51,12 @@ export async function POST(request: NextRequest) {
     const discoveredRoutes = [...discoverFileRoutes(paths), ...discoverSourceRoutes(readableRouteFiles)];
     const uniqueRoutes = [...new Map(discoveredRoutes.map((route) => [route.route, route])).values()];
     if (!uniqueRoutes.length && paths.some((path) => /(?:^|\/)vite\.config\.(?:t|j)s$/.test(path))) uniqueRoutes.push({ route: "/", file: paths.find((path) => /(?:^|\/)src\/App\.(?:t|j)sx$/.test(path)) ?? "src/App.tsx", dynamic: false, framework: "react-router" });
+    const extractedBrand = extractBrandTokens(readableBrandFiles);
+    extractedBrand.documents = await brandDocuments(readableBrandFiles);
     return Response.json({
       repository: { owner, name: repository, fullName: repo.full_name, url: repo.html_url, private: repo.private, defaultBranch: repo.default_branch, baseSha: branch.commit.sha },
       routes: uniqueRoutes.map((route) => ({ ...route, fixtureRequired: route.dynamic })),
-      brand: extractBrandTokens(readableBrandFiles),
+      brand: extractedBrand,
       trustRequired: true,
       scriptsExecuted: false,
     });

@@ -2,6 +2,7 @@ export type BrandTokens = {
   colors: string[];
   fonts: string[];
   sourceFiles: string[];
+  documents?: Array<{ path: string; kind: "brand" | "design"; content: string; sourceHash: string }>;
 };
 
 export function parseGitHubRepositoryUrl(value: string) {

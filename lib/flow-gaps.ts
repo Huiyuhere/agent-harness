@@ -1,6 +1,9 @@
 import { TextNodeKey } from "./design-hierarchy";
 
-export type FlowGap = { id: string; frameId: string; node: TextNodeKey; label: string; firstSeenAt: string; lastClickedAt: string; clickCount: number; suggestedRoute: string; status: "open" | "resolved" };
+export type FlowGap = {
+  id: string; frameId: string; node: TextNodeKey; label: string; firstSeenAt: string; lastClickedAt: string; clickCount: number; suggestedRoute: string; status: "open" | "resolved";
+  role?: string; sourceAnchor?: { route: string; group: string; node: string }; computedStyle?: { fontSize: string; color: string; fontFamily: string }; screenshotKey?: string | null; transactionId?: string | null;
+};
 
 export function recordFlowGap(gaps: FlowGap[], input: Omit<FlowGap, "id" | "clickCount" | "status" | "firstSeenAt"> & { id: string }) {
   const existing = gaps.find((gap) => gap.frameId === input.frameId && gap.node === input.node && gap.status === "open");
@@ -10,4 +13,8 @@ export function recordFlowGap(gaps: FlowGap[], input: Omit<FlowGap, "id" | "clic
 
 export function resolveFlowGap(gaps: FlowGap[], gapId: string) {
   return gaps.map((gap) => gap.id === gapId ? { ...gap, status: "resolved" as const } : gap);
+}
+
+export function flowGapPrompt(gap: FlowGap, frameName: string, projectName: string) {
+  return `Plan the missing “${gap.label}” experience for ${projectName}. It is a ${gap.role ?? "control"} on the ${frameName} frame with no designed destination.\n\nPropose what should happen after the click, the minimum new route or state at ${gap.suggestedRoute}, the content hierarchy, reusable components, and how it should inherit the current brand and visual system. Call out assumptions before suggesting source changes.`;
 }
